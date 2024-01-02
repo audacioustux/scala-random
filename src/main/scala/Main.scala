@@ -140,4 +140,5 @@ import scala.concurrent.duration.Duration
     .runWith(sinkPrint)
     .onComplete(_ => actorSystem.terminate())
 
+  // wait for the actor system to terminate
   Await.result(actorSystem.whenTerminated, Duration.Inf)
