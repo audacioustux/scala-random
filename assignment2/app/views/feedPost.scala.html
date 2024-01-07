@@ -1,0 +1,48 @@
+@(post: Post)(implicit request: RequestHeader)
+
+<div class="flex justify-between p-5">
+    <div class="w-1/4 prose">
+        <h4>Description</h4>
+        <p>@post.getDescription</p>
+    </div>
+    <div class="flex justify-center w-2/4">
+        <div class="flex flex-col gap-4">
+            <div class="flex justify-end">
+                Added on @utils.displayDate(post.getCreatedAt) by @post.getUser
+            </div>
+            <img src="@routes.Assets.versioned(post.getImagePath)" width="512" alt="placeholder" />
+        </div>
+    </div>
+    <div class="flex flex-col gap-4 justify-between w-1/4 p-5">
+        <div style="display: flex">
+            @helper.form(action = routes.FeedController.likedPost(post.getId, request.getQueryString("sort"))) {
+            @helper.CSRF.formField
+            @if(post.hasUserLiked(utils.getSessionUsername(request.session).get)) {
+            @likeButtonLiked()
+            } else {
+            @likeButton()
+            }
+            }
+            <div class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200">
+                @post.getLikes.length
+            </div>
+        </div>
+        <div class="flex-grow">
+            <div class="flex flex-col gap-2 prose">
+                <h4>Comments</h4>
+                <div class="flex flex-col gap-2">
+                    @for(comment <- post.getComments.take(3)) { <!-- -->
+                        <div>
+                            <b>@comment.user:</b> @comment.content
+                        </div>
+                        }
+                </div>
+            </div>
+        </div>
+        <div class="flex justify-end">
+            <a href="@routes.PostController.index(post.getId)" class="text-blue-500 hover:text-blue-800 font-bold">
+                See More
+            </a>
+        </div>
+    </div>
+</div>

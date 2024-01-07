@@ -1,0 +1,57 @@
+@(post: Post)(implicit request: RequestHeader)
+
+@main("Post") {
+@navbar("Post")
+@request.flash.data.map { case (name, value) =>
+<div>@name: @value</div>
+}
+<div class="flex justify-between p-5 gap-4">
+    <div class=" flex justify-center w-2/4">
+        <div class="flex flex-col">
+            <div class="flex justify-between">
+                <div class="flex justify-end">
+                    Added on @utils.displayDate(post.getCreatedAt) by @post.getUser</div>
+                <div class="flex">
+                    @helper.form(action = routes.PostController.pressedLike(post.getId)) {
+                    @helper.CSRF.formField
+                    @if(post.hasUserLiked(utils.getSessionUsername(request.session).get)) {
+                    @likeButtonLiked()
+                    } else {
+                    @likeButton()
+                    }
+                    }
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200">
+                        @post.getLikes.length
+                    </div>
+                </div>
+            </div>
+            <img src="@routes.Assets.versioned(post.getImagePath)" width="800px" alt="placeholder" />
+        </div>
+    </div>
+    <div class="w-2/4 flex flex-col gap-4">
+        <div class="prose max-w-none">
+            <h4>Description</h4>
+            <p>@post.getDescription</p>
+        </div>
+        <div class="flex flex-col prose max-w-none">
+            <h4>Comments</h4>
+            <div class="flex flex-col gap-2">
+                @for(comment <- post.getComments) { <!-- -->
+                    <div>
+                        <b>@comment.user:</b> @comment.content
+                    </div>
+                    }
+            </div>
+            @helper.form(action = routes.PostController.addComment(post.getId)) {
+            @helper.CSRF.formField
+            <div class="flex flex-col gap-4">
+                <label for="comment"></label>
+                <textarea id="comment" name="comment" rows="4" cols="50" placeholder="Write a comment"></textarea>
+                <button class="bg-blue-500 text-white hover:bg-blue-800 font-bold py-2 px-4 rounded-md mr-2"
+                    type="submit">Submit Comment</button>
+            </div>
+            }
+        </div>
+    </div>
+</div>
+}

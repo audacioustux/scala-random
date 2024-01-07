@@ -1,0 +1,8 @@
+@()(implicit request: RequestHeader)
+@main("Profile") {
+@navbar("Profile")
+
+<div class="container mx-auto my-10">
+    @request.session.get("username").get
+</div>
+}

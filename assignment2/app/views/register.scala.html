@@ -1,0 +1,36 @@
+@(userForm: Form[User])(implicit request: MessagesRequestHeader)
+@main("Register") {
+<div class="container mx-auto my-10">
+    <div class="flex flex-col gap-4">
+        <h1 class="text-2xl font-bold mb-4">Login</h1>
+        @request.flash.data.map { case (name, value) =>
+        <div class="text-red-500">@name: @value</div>
+        }
+
+        @if(userForm.hasGlobalErrors) {
+        @if(userForm.globalErrors.size == 1) {
+        <p class="text-red-500">@userForm.globalErrors.head.format</p>
+        } else {
+        <ul class="text-red-500">
+            @for(error <- userForm.globalErrors) { <!-- -->
+                <li>@error.format</li>
+                }
+        </ul>
+        }
+        }
+        @helper.form(action = routes.RegisterController.registerSubmit()) {
+        @helper.CSRF.formField
+        <div class="mb-4">
+            @helper.inputText(userForm("username"))
+        </div>
+        <div class="mb-4">
+            @helper.inputPassword(userForm("password"))
+        </div>
+        <div class="flex items-center">
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md mr-2">Register</button>
+            <a href="@routes.LoginController.index()" class="text-blue-500">Login</a>
+        </div>
+        }
+    </div>
+</div>
+}
